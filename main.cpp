@@ -2,14 +2,16 @@
 #include <vector>
 #include <algorithm>
 #include "RDD.hpp"
+#include "GrappaContext.hpp"
 
 using namespace std;
 
 int main() {
     cout << "Hello, World!" << endl;
     vector<int> data {1, 2, 3, 4};
-    ParallelCollectionRDD<int> rdd(data);
-    auto r = rdd.map([](int a) -> double {
+    auto context = new GrappaContext;
+    auto rdd = context->parallelize(data);
+    auto r = rdd->map([](int a) -> double {
         return a * 2;
     })->map([](double a) -> double {
         return a * 2;

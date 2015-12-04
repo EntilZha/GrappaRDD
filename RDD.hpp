@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <iostream>
 
+#ifndef GRAPPARDD_RDD_H
+#define GRAPPARDD_RDD_H
+
 using namespace std;
 
 template<typename T>
@@ -56,4 +59,6 @@ public:
         return sequence;
     }
 };
+
+#endif //GRAPPARDD_RDD_H
 
