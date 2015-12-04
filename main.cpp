@@ -12,6 +12,9 @@ class RDD {
 public:
     vector<A> sequence;
 
+    RDD() {}
+    RDD(vector<A> sequence): sequence(sequence) {}
+
     template<typename Func>
     auto map(Func f) -> RDD<decltype(f(A()))> {
         vector<decltype(f(A()))> result;
@@ -31,15 +34,19 @@ public:
 template <typename A>
 class MappedRDD: public RDD<A> {
 public:
-    vector<A> sequence;
-
-    MappedRDD(vector<A> sequence): sequence(sequence) {}
-
+    MappedRDD(vector<A> sequence): RDD<A>(sequence) {}
 //    vector<A> compute() {
 //        vector<A> result;
 //        return result;
 //    }
 };
+
+template<typename T>
+void print_vector(vector<T> v) {
+    for (auto i = v.begin(); i != v.end(); ++i) {
+        cout << *i << ' ' << endl;
+    }
+}
 
 
 int main() {
@@ -51,9 +58,11 @@ int main() {
     }).map([](double a) -> double {
         return a + 5;
     });
-    for (auto i = r.sequence.begin(); i != r.sequence.end(); ++i) {
-        cout << *i << ' ' << endl;
-    }
+
+    cout << "Printing numbers\n";
+    print_vector(r.sequence);
+
+    cout << "Printing sum\n";
     cout << r.fold(0, [](int a, int b) -> int {
         return a + b;
     });
