@@ -12,6 +12,9 @@ class RDD {
 public:
     vector<A> sequence;
 
+    RDD() {}
+    RDD(vector<A> sequence): sequence(sequence) {}
+
     template<typename Func>
     auto map(Func f) -> RDD<decltype(f(A()))> {
         vector<decltype(f(A()))> result;
@@ -25,19 +28,16 @@ public:
         return std::accumulate(std::begin(sequence), std::end(sequence), init, f);
     }
 
-    virtual vector<A> compute() = 0;
+//    virtual vector<A> compute() = 0;
 };
 
 template <typename A>
 class MappedRDD: public RDD<A> {
 public:
-    vector<A> sequence;
-
-    MappedRDD(vector<A> sequence): sequence(sequence) {}
-
-    vector<A> compute() {
-        vector<A> result;
-        return result;
-    }
+    MappedRDD(vector<A> sequence): RDD<A>(sequence) {}
+//    vector<A> compute() {
+//        vector<A> result;
+//        return this->sequence;
+//    }
 };
 
