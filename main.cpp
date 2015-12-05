@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "RDD.hpp"
 #include "GrappaContext.hpp"
 
 using namespace std;

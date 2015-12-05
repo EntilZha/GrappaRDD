@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <Grappa.hpp>
 
 #ifndef GRAPPARDD_RDD_H
 #define GRAPPARDD_RDD_H
@@ -28,6 +29,10 @@ public:
     auto fold(A init, Func f) -> decltype(f(A(), A())) {
         auto sequence = compute();
         return std::accumulate(std::begin(sequence), std::end(sequence), init, f);
+    }
+
+    auto collect() -> vector<A> {
+        return compute();
     }
 
     virtual vector<A> compute() = 0;

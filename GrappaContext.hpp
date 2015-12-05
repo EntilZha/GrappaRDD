@@ -6,8 +6,11 @@
 
 class GrappaContext {
 public:
+    GrappaContext() {
+        // Grappa init code goes here
+    }
     template <typename A>
-    static ParallelCollectionRDD<A>* parallelize(vector<A> sequence) {
+    ParallelCollectionRDD<A>* parallelize(vector<A> sequence) {
         return new ParallelCollectionRDD<A>(sequence);
     }
 };
