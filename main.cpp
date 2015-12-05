@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 #include "GrappaContext.hpp"
 
 using namespace std;
@@ -23,5 +22,12 @@ int main() {
     cout << r->fold(0, [](int a, int b) -> int {
         return a + b;
     });
+
+    auto s = r->map([](double a) -> string {
+        string prefix("number");
+        string result = prefix + std::to_string(a);
+        return result;
+    });
+    print_vector(s->collect());
     return 0;
 }

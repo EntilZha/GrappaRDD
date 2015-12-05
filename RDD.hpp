@@ -10,6 +10,7 @@ using namespace std;
 
 template<typename T>
 void print_vector(vector<T> v) {
+    cout << "Length: " << v.size() << endl;
     for (auto i = v.begin(); i != v.end(); ++i) {
         cout << *i << ' ' << endl;
     }

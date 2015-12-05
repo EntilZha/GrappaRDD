@@ -5,3 +5,6 @@ include $(GRAPPA_PREFIX)/share/Grappa/grappa.mk
 main: main.o
 
 main.o: RDD.hpp GrappaContext.hpp
+
+clean:
+	rm main.o main
