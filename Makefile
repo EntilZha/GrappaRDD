@@ -7,4 +7,4 @@ main: main.o
 main.o: RDD.hpp GrappaContext.hpp
 
 clean:
-	rm main.o main
+	rm -f main.o main

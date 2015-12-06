@@ -3,8 +3,37 @@
 #include "GrappaContext.hpp"
 
 using namespace std;
+using namespace Grappa;
 
-int main() {
+int main(int argc, char * argv[]) {
+		init(&argc, &argv);
+
+		auto f = [](int64_t a) {
+			return a + 5;
+		};
+
+		auto array = global_alloc<int64_t>(10);
+		run([array, f]{
+			forall(array, 10, [f](int64_t i, int64_t& n) {
+					n = i;
+			});
+
+			forall(array, 10, [f](int64_t& n) {
+				cout << f(n) << endl;
+			});
+		});
+
+		cout << "\n";
+
+
+
+		//forall(array, 10, [](int64_t& e) {
+		//		cout << e << endl;
+		//});
+
+		finalize();
+
+
     cout << "Hello, World!" << endl;
     vector<int> data {1, 2, 3, 4};
     auto context = new GrappaContext;
@@ -31,3 +60,4 @@ int main() {
     print_vector(s->collect());
     return 0;
 }
+
