@@ -36,19 +36,27 @@ public:
 		//return std::accumulate(std::begin(sequence), std::end(sequence), init, f);
 	//}
 
-	//auto collect() -> vector<A> {
-		//return compute();
-	//}
+	auto collect() -> vector<A> {
+		auto rdd = compute();
+		vector<A> output;
+		forall(rdd, size, [&output](A& e) {
+			delegate::call<async>(0, [&output, e] {
+				output.push_back(e);
+			});
+		});
+		return output;
+	}
 
 	void print() {
 		auto rdd = compute();
-		forall(rdd, 10, [](A& e) {
+		forall(rdd, size, [](A& e) {
 			cout << e << endl;
 		});
 	}
 
 protected:
     virtual GlobalAddress<A> compute() = 0;
+	int size;
 };
 
 //template <typename A, typename B, typename Func>
@@ -83,7 +91,9 @@ class RangedRDD: public RDD<double> {
 	int start;
 	int end;
 public:
-	RangedRDD(int start, int end): start(start), end(end) {}
+	RangedRDD(int start, int end): start(start), end(end) {
+		size = end - start;
+	}
 
 	GlobalAddress<double> compute() {
 		auto sequence = global_alloc<double>(end - start);
