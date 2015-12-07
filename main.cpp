@@ -6,58 +6,60 @@ using namespace std;
 using namespace Grappa;
 
 int main(int argc, char * argv[]) {
-		init(&argc, &argv);
+	init(&argc, &argv);
 
-		auto f = [](int64_t a) {
-			return a + 5;
-		};
+	//run([]{
+		//auto f = [](int a) {
+			//return a + 5;
+		//};
 
-		auto array = global_alloc<int64_t>(10);
-		run([array, f]{
-			forall(array, 10, [f](int64_t i, int64_t& n) {
-					n = i;
-			});
-
-			forall(array, 10, [f](int64_t& n) {
-				cout << f(n) << endl;
-			});
-		});
-
-		cout << "\n";
-
-
-
-		//forall(array, 10, [](int64_t& e) {
-		//		cout << e << endl;
+		//auto array = global_alloc<int>(10);
+		//forall(array, 10, [f](int64_t i, int& n) {
+			//n = i;
 		//});
 
-		finalize();
+		//forall(array, 10, [f](int& n) {
+			//cout << f(n) << endl;
+		//});
+	//});
+
+	//cout << "\n";
+
 
 
     cout << "Hello, World!" << endl;
     vector<int> data {1, 2, 3, 4};
     auto context = new GrappaContext;
-    auto rdd = context->parallelize(data);
-    auto r = rdd->map([](int a) -> double {
-        return a * 2;
-    })->map([](double a) -> double {
-        return a * 2;
-    });
 
-    cout << "Printing numbers\n";
-    print_vector(r->compute());
+	run([] {
+		auto rdd = new RangedRDD(0, 10);
+		rdd->print();
+	});
 
-    cout << "Printing sum\n";
-    cout << r->fold(0, [](int a, int b) -> int {
-        return a + b;
-    });
+    //auto rdd = context->parallelize(data);
+    //auto r = rdd->map([](int a) -> double {
+        //return a * 2;
+    //})->map([](double a) -> double {
+        //return a * 2;
+    //});
 
-    auto s = r->map([](double a) -> string {
-        string prefix("number");
-        string result = prefix + std::to_string(a);
-        return result;
-    });
-    print_vector(s->collect());
+    //cout << "Printing numbers\n";
+    //print_vector(r->compute());
+
+    //cout << "Printing sum\n";
+    //cout << r->fold(0, [](int a, int b) -> int {
+        //return a + b;
+    //});
+
+    //auto s = r->map([](double a) -> string {
+        //string prefix("number");
+        //string result = prefix + std::to_string(a);
+        //return result;
+    //});
+    //print_vector(s->collect());
+
+	finalize();
+
     return 0;
 }
 
