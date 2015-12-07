@@ -8,13 +8,13 @@ using namespace Grappa;
 int main(int argc, char * argv[]) {
 		init(&argc, &argv);
 
+		run([]{
 		auto f = [](int64_t a) {
 			return a + 5;
 		};
 
 		auto array = global_alloc<int64_t>(10);
-		run([array, f]{
-			forall(array, 10, [f](int64_t i, int64_t& n) {
+			forall(array, 9, [f](int64_t i, int64_t& n) {
 					n = i;
 			});
 
