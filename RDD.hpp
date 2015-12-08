@@ -71,7 +71,6 @@ public:
 		typedef GlobalAddress<decltype(f(A()))> result_type;
 		result_type rdd = static_cast<result_type>(prev_rdd);
 		forall(rdd, this->size, [this, prev_rdd](int64_t i, A& e) {
-			cout << "Core: " << mycore() << endl;
 			e = this->f(*(prev_rdd + i).pointer());
 		});
 		return rdd;
