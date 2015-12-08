@@ -72,11 +72,12 @@ public:
 
 	GlobalAddress<A> compute() {
 		// Assumes sizeof(A)=sizeof(B)
-		GlobalAddress<A> prev_rdd = prev->compute();
+		auto prev_rdd = prev->compute();
 		//typedef GlobalAddress<decltype(f(A()))> result_type;
 		//result_type rdd = global_alloc<result_type>(prev_rdd->size);
 
 		forall(prev_rdd, this->size, [this](int64_t i, A& e) {
+			cout << "Core: " << mycore() << endl;
 			cout << "e: " << e << endl;
 			cout << "f(e): " << this->f(e) << endl;
 			e = this->f(e);
