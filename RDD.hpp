@@ -106,9 +106,9 @@ public:
 
     GlobalAddress <A> compute() {
         this->rdd_address = global_alloc<A>(this->size);
-        forall(this->rdd_address, this->size, [this](int64_t i, A &e) {
-            e = this->sequence[i];
-        });
+        for (int i = 0; i < this->size; i++) {
+            delegate::write(this->rdd_address + i, this->sequence[i]);
+        }
         return this->rdd_address;
     }
 };
