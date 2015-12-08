@@ -49,8 +49,8 @@ public:
 
 	void print() {
 		auto rdd = compute();
+		cout << "Core: "<< mycore() << endl;
 		forall(rdd, size, [](A& e) {
-			cout << "Core: "<< rdd.core() << " ";
 			cout << e << endl;
 		});
 	}
