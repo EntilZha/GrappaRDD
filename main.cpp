@@ -32,12 +32,15 @@ int main(int argc, char * argv[]) {
     auto context = new GrappaContext;
 
 	run([] {
-		auto rdd = new RangedRDD(0, 10000);
-		rdd->print();
-		print_vector(rdd->collect());
+		auto rdd = new RangedRDD(0, 100);
+		//rdd->print();
+		//print_vector(rdd->collect());
 		rdd->map([](double a) {
 			return a * 2;
 		})->print();
+		on_all_cores([]{
+			cout << "Core Count: " << mycore() << endl;
+		});
 	});
 
     //auto rdd = context->parallelize(data);
