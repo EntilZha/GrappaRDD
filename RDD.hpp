@@ -3,6 +3,7 @@
 #include <iostream>
 #include <Grappa.hpp>
 
+
 #ifndef GRAPPARDD_RDD_H
 #define GRAPPARDD_RDD_H
 
@@ -18,7 +19,7 @@ void print_vector(vector<T> v) {
 }
 
 
-template<typename A, typename Func>
+template<typename A, typename B, typename Func>
 class MappedRDD;
 
 template <typename A>
@@ -26,14 +27,9 @@ class RDD {
 public:
 
 	template<typename Func>
-	auto map(Func f) -> RDD<A>* {
-		return new MappedRDD<A, Func>(this, f);
+	auto map(Func f) -> RDD<decltype(f(A()))>* {
+		return new MappedRDD<A, decltype(f(A())), Func>(this, f);
 	}
-
-	//template<typename Func>
-	//auto map(Func f) -> RDD<decltype(f(A()))>* {
-		//return new MappedRDD<A, decltype(f(A())), Func>(this, f);
-	//}
 
 	//template<typename Func>
 	//auto fold(A init, Func f) -> decltype(f(A(), A())) {
@@ -66,8 +62,8 @@ protected:
 	GlobalAddress<A> rdd_address;
 };
 
-template <typename A, typename Func>
-class MappedRDD: public RDD<A> {
+template <typename A, typename B, typename Func>
+class MappedRDD: public RDD<B> {
 public:
 	RDD<A> *prev;
 	Func f;
@@ -75,11 +71,10 @@ public:
 		this->size = prev->size;
 	}
 
-	GlobalAddress<A> compute() {
+	GlobalAddress<B> compute() {
 		// Assumes sizeof(A)=sizeof(B)
-		this->rdd_address = prev->compute();
-		//typedef GlobalAddress<decltype(f(A()))> result_type;
-		//result_type rdd = global_alloc<result_type>(prev_rdd->size);
+		auto prev_rdd = prev->compute();
+		this->rdd_address = static_cast<GlobalAddress<B>>(prev_rdd);
 
 		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
 			cout << "Core: " << mycore();
