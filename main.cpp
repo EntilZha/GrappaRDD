@@ -35,6 +35,9 @@ int main(int argc, char * argv[]) {
 		auto rdd = new RangedRDD(0, 10);
 		rdd->print();
 		print_vector(rdd->collect());
+		rdd->map([](double a) {
+			return a * 2;
+		})->print();
 	});
 
     //auto rdd = context->parallelize(data);

@@ -25,10 +25,10 @@ template <typename A>
 class RDD {
 public:
 
-	//template<typename Func>
-	//auto map(Func f) -> RDD<decltype(f(A()))>* {
-		//return new MappedRDD<A, decltype(f(A())), Func>(this, f);
-	//}
+	template<typename Func>
+	auto map(Func f) -> RDD<decltype(f(A()))>* {
+		return new MappedRDD<A, decltype(f(A())), Func>(this, f);
+	}
 
 	//template<typename Func>
 	//auto fold(A init, Func f) -> decltype(f(A(), A())) {
@@ -54,25 +54,28 @@ public:
 		});
 	}
 
-protected:
     virtual GlobalAddress<A> compute() = 0;
 	int size;
 };
 
-//template <typename A, typename B, typename Func>
-//class MappedRDD: public RDD<B> {
-//public:
-	//RDD<A> *prev;
-	//Func f;
-	//MappedRDD(RDD<A> *prev, Func f): prev(prev), f(f) {}
-	//vector<B> compute() {
-		//vector<A> prev_vector = prev->compute();
-		//vector<decltype(f(A()))> result;
-		//result.resize(prev_vector.size());
-		//std::transform(prev_vector.begin(), prev_vector.end(), result.begin(), f);
-		//return result;
-	//}
-//};
+template <typename A, typename B, typename Func>
+class MappedRDD: public RDD<B> {
+public:
+	RDD<A> *prev;
+	Func f;
+	MappedRDD(RDD<A> *prev, Func f): prev(prev), f(f) {}
+
+	GlobalAddress<B> compute() {
+		// Assumes sizeof(A)=sizeof(B)
+		GlobalAddress<A> prev_rdd = prev->compute();
+		typedef GlobalAddress<decltype(f(A()))> result_type;
+		result_type rdd = static_cast<result_type>(prev_rdd);
+		forall(rdd, this->size, [this, prev_rdd](int64_t i, A& e) {
+			e = this->f(*(prev_rdd + i).pointer());
+		});
+		return rdd;
+	}
+};
 
 //template <typename A>
 //class ParallelCollectionRDD: public RDD<A> {
