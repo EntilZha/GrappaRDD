@@ -14,7 +14,7 @@ using namespace std;
 using namespace Grappa;
 
 template<typename T>
-void print_vector(vector<T> v) {
+void print_vector(vector <T> v) {
     cout << "Length: " << v.size() << endl;
     for (auto i = v.begin(); i != v.end(); ++i) {
         cout << *i << ' ' << endl;
@@ -29,100 +29,107 @@ template<typename A>
 class RDD {
 public:
 
-	template<typename Func>
-	auto map(Func f) -> RDD<decltype(f(A()))>* {
-		return new MappedRDD<A, decltype(f(A()))>(this, f);
-	}
+    template<typename Func>
+    auto map(Func f) -> RDD<decltype(f(A()))> * {
+        return new MappedRDD<A, decltype(f(A()))>(this, f);
+    }
 
-	//template<typename Func>
-	//auto fold(A init, Func f) -> decltype(f(A(), A())) {
-		//auto sequence = compute();
-		//return std::accumulate(std::begin(sequence), std::end(sequence), init, f);
-	//}
+    //template<typename Func>
+    //auto fold(A init, Func f) -> decltype(f(A(), A())) {
+    //auto sequence = compute();
+    //return std::accumulate(std::begin(sequence), std::end(sequence), init, f);
+    //}
 
-	auto collect() -> vector<A> {
-		auto rdd = this->compute();
-		vector<A> output;
-		forall(rdd, size, [&output](A& e) {
-			delegate::call<async>(0, [&output, e] {
-				output.push_back(e);
-			});
-		});
-		return output;
-	}
+    auto collect() -> vector <A> {
+        auto rdd = this->compute();
+        vector <A> output;
+        forall(rdd, size, [&output](A &e) {
+            delegate::call<async>(0, [&output, e] {
+                output.push_back(e);
+            });
+        });
+        return output;
+    }
 
-	void print() {
-		auto rdd = this->compute();
-		forall(rdd, size, [](A& e) {
-			cout << e << endl;
-		});
-	}
+    void print() {
+        auto rdd = this->compute();
+        forall(rdd, size, [](A &e) {
+            cout << e << endl;
+        });
+    }
 
-    virtual GlobalAddress<A> compute() = 0;
-	int size;
+    virtual GlobalAddress <A> compute() = 0;
+
+    int size;
 
 protected:
-	GlobalAddress<A> rdd_address;
+    GlobalAddress <A> rdd_address;
 };
 
 template<typename T, typename A>
-class MappedRDD: public RDD<A> {
+class MappedRDD : public RDD<A> {
 public:
-	static_assert(sizeof(A) == sizeof(T), "A and T must have the same size");
-	RDD<T> *prev;
-	std::function<A(T)> f;
-	MappedRDD(RDD<T> *prev, std::function<A(T)> f): prev(prev), f(f) {
-		this->size = prev->size;
-	}
+    static_assert(sizeof(A) == sizeof(T), "A and T must have the same size");
+    RDD<T> *prev;
+    std::function<A(T)> f;
 
-	GlobalAddress<A> compute() {
-		// Assumes sizeof(A)=sizeof(T)
-		auto prev_address = prev->compute();
-		this->rdd_address = static_cast<GlobalAddress<A>>(prev_address);
-		auto func = this->f;
+    MappedRDD(RDD<T> *prev, std::function<A(T)> f) : prev(prev), f(f) {
+        this->size = prev->size;
+    }
 
-		forall(this->rdd_address, this->size, [func](int64_t i, A& e) {
-			e = func((T&) e);
-		});
-		return this->rdd_address;
-	}
+    GlobalAddress <A> compute() {
+        // Assumes sizeof(A)=sizeof(T)
+        auto prev_address = prev->compute();
+        this->rdd_address = static_cast<GlobalAddress <A>>(prev_address);
+        auto func = this->f;
+
+        forall(this->rdd_address, this->size, [func](int64_t i, A &e) {
+            e = func((T &) e);
+        });
+        return this->rdd_address;
+    }
 };
 
+//template<typename A>
+//ParallelCollectionRDD<A> parallelize(vector<A> sequence) {
+//return new ParallelCollectionRDD(sequence);
+//}
+
 template<typename A>
-class ParallelCollectionRDD: public RDD<A> {
+class ParallelCollectionRDD : public RDD<A> {
 private:
-	vector<A> sequence;
+    vector <A> sequence;
 public:
-	ParallelCollectionRDD(vector<A> sequence): sequence(sequence) {
-		this->size = sequence.size();
-	}
+    ParallelCollectionRDD(vector <A> sequence) : sequence(sequence) {
+        this->size = sequence.size();
+    }
 
-	GlobalAddress<A> compute() {
-		this->rdd_address = global_alloc<A>(this->size);
-		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
-			e = this->sequence[i];
-		});
-		return this->rdd_address;
-	}
+    GlobalAddress <A> compute() {
+        this->rdd_address = global_alloc<A>(this->size);
+        forall(this->rdd_address, this->size, [this](int64_t i, A &e) {
+            e = this->sequence[i];
+        });
+        return this->rdd_address;
+    }
 };
 
 template<typename A>
-class RangedRDD: public RDD<A> {
-	A start;
-	A end;
+class RangedRDD : public RDD<A> {
+    A start;
+    A end;
 public:
-	RangedRDD(A start, A end): start(start), end(end) {
-		this->size = static_cast<int>(end - start);
-	}
+    RangedRDD(A start, A end) : start(start), end(end) {
+        this->size = static_cast<int>(end - start);
+    }
 
-	GlobalAddress<A> compute() {
-		this->rdd_address = global_alloc<A>(this->size);
-		forall(this->rdd_address, this->size, [](int64_t i, A& e) {
-			e = i;
-		});
+    GlobalAddress <A> compute() {
+        this->rdd_address = global_alloc<A>(this->size);
+        forall(this->rdd_address, this->size, [](int64_t i, A &e) {
+            e = i;
+        });
 
-		return this->rdd_address;
-	}
+        return this->rdd_address;
+    }
 };
 
 #endif //GRAPPARDD_RDD_H
