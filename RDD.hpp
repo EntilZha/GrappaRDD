@@ -125,6 +125,9 @@ public:
 			e = i;
 			cout << "ranged: " << e << endl;
 		});
+		forall(this->rdd_address, this->size, [](int64_t i, A& e) {
+			cout << "2ranged: " << e << endl;
+		});
 
 		return this->rdd_address;
 	}

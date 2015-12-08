@@ -19,7 +19,8 @@ int main(int argc, char * argv[]) {
 		//(new RangedRDD<int64_t>(0, 10))->print();
 
 		cout << "Mapped print" << endl;
-		(new RangedRDD<int64_t>(0, 10))->map([](int64_t a) -> double {
+		auto rdd = new RangedRDD<int64_t>(0, 10);
+		rdd->map([](int64_t a) -> double {
 			return a * 2.5;
 		})->print();
 
