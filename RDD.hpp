@@ -3,6 +3,7 @@
 #include <iostream>
 #include <functional>
 #include <type_traits>
+#include <typeinfo>
 #include <Grappa.hpp>
 
 
@@ -40,7 +41,7 @@ public:
 	//}
 
 	auto collect() -> vector<A> {
-		auto rdd = compute();
+		auto rdd = this->compute();
 		vector<A> output;
 		forall(rdd, size, [&output](A& e) {
 			delegate::call<async>(0, [&output, e] {
@@ -51,7 +52,7 @@ public:
 	}
 
 	void print() {
-		auto rdd = compute();
+		auto rdd = this->compute();
 		forall(rdd, size, [](A& e) {
 			cout << e << endl;
 		});
@@ -77,14 +78,11 @@ public:
 	GlobalAddress<A> compute() {
 		// Assumes sizeof(A)=sizeof(T)
 		auto prev_address = prev->compute();
-		cout << "prev_address: " << prev_address << endl;
 		this->rdd_address = static_cast<GlobalAddress<A>>(prev_address);
-		cout << "address: " << this->rdd_address << endl;
 		auto func = this->f;
 
 		forall(this->rdd_address, this->size, [func](int64_t i, A& e) {
-			cout << "i: " << i << " e: " << e << " f(e): " << func(e) << endl;
-			e = func(e);
+			e = func((T&) e);
 		});
 		return this->rdd_address;
 	}
@@ -92,13 +90,13 @@ public:
 
 template<typename A>
 class ParallelCollectionRDD: public RDD<A> {
+private:
 	vector<A> sequence;
 public:
 	ParallelCollectionRDD(vector<A> sequence): sequence(sequence) {
 		this->size = sequence.size();
 	}
 
-protected:
 	GlobalAddress<A> compute() {
 		this->rdd_address = global_alloc<A>(this->size);
 		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
@@ -110,7 +108,6 @@ protected:
 
 template<typename A>
 class RangedRDD: public RDD<A> {
-	static_assert(std::is_integral<A>::value, "RangedRDD<A> must have A as integral");
 	A start;
 	A end;
 public:
@@ -120,13 +117,8 @@ public:
 
 	GlobalAddress<A> compute() {
 		this->rdd_address = global_alloc<A>(this->size);
-		cout << "ranged address: " << this->rdd_address << endl;
 		forall(this->rdd_address, this->size, [](int64_t i, A& e) {
 			e = i;
-			cout << "ranged: " << e << endl;
-		});
-		forall(this->rdd_address, this->size, [](int64_t i, A& e) {
-			cout << "2ranged: " << e << endl;
 		});
 
 		return this->rdd_address;

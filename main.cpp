@@ -1,14 +1,22 @@
 #include <iostream>
 #include <vector>
+#include <stdio.h>
+#include <typeinfo>
 #include "GrappaContext.hpp"
 
 using namespace std;
 using namespace Grappa;
 
-struct container {
-	double a;
-	int b;
+struct int_container {
+	int64_t a;
+	int64_t b;
 };
+
+struct double_container {
+	double a;
+	double b;
+};
+
 
 int main(int argc, char * argv[]) {
 	init(&argc, &argv);
@@ -18,41 +26,38 @@ int main(int argc, char * argv[]) {
 		//cout << "Simple print" << endl;
 		//(new RangedRDD<int64_t>(0, 10))->print();
 
+		auto f = [](int64_t a) -> double {
+			return a * 2.5;
+		};
+
 		cout << "Mapped print" << endl;
 		auto rdd = new RangedRDD<int64_t>(0, 10);
-		rdd->map([](int64_t a) -> double {
-			return a * 2.5;
-		})->print();
+		rdd->map(f)->print();
 
 		on_all_cores([]{
 			cout << "Core Count: " << mycore() << endl;
 		});
 
 		cout << "ParallelCollectionRDD\n";
-    	vector<container> data;
+    	vector<int_container> data;
 		for (int i = 0; i < 20; i++) {
-			container v;
-			v.a = 1.5 * i;
+			int_container v;
+			v.a = 2 * i;
 			v.b = i;
 			data.push_back(v);
 		}
 
-		auto pcoll = new ParallelCollectionRDD<container>(data);
-		for (auto e: pcoll->collect()) {
+		auto pcoll = new ParallelCollectionRDD<int_container>(data);
+		auto mpcoll = pcoll->map([](int_container a) -> double_container {
+			double_container v;
+			v.a = 2.5;
+			v.b = 1.5;
+			return v;
+		});
+		for (auto e: mpcoll->collect()) {
 			cout << "a: " << e.a << " b: " << e.b << endl;
 		}
 
-		vector<int64_t> data2 {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-		auto pcoll2 = new ParallelCollectionRDD<int64_t>(data2);
-
-		cout << "Mapped ParallelCollectionRDD\n";
-		auto mpoll2 = pcoll2->map([](int64_t a) {
-			return a * 2;
-		});
-
-		for (auto e: mpoll2->collect()) {
-			cout << "ce: " << e << endl;
-		}
 	});
 
     //auto rdd = context->parallelize(data);
