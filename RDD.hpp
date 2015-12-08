@@ -50,6 +50,7 @@ public:
 	void print() {
 		auto rdd = compute();
 		forall(rdd, size, [](A& e) {
+			cout << "Core: "<< rdd.core() << " ";
 			cout << e << endl;
 		});
 	}
