@@ -20,7 +20,7 @@ void print_vector(vector<T> v) {
 }
 
 
-template<typename A, typename B>
+template<typename T, typename A>
 class MappedRDD;
 
 template <typename A>
@@ -63,19 +63,19 @@ protected:
 	GlobalAddress<A> rdd_address;
 };
 
-template <typename A, typename B>
-class MappedRDD: public RDD<B> {
+template <typename T, typename A>
+class MappedRDD: public RDD<A> {
 public:
-	RDD<A> *prev;
-	std::function<B(A)> f;
-	MappedRDD(RDD<A> *prev, std::function<B(A)> f): prev(prev), f(f) {
+	RDD<T> *prev;
+	std::function<A(T)> f;
+	MappedRDD(RDD<T> *prev, std::function<A(T)> f): prev(prev), f(f) {
 		this->size = prev->size;
 	}
 
-	GlobalAddress<B> compute() {
-		// Assumes sizeof(A)=sizeof(B)
+	GlobalAddress<A> compute() {
+		// Assumes sizeof(A)=sizeof(T)
 		auto prev_rdd = prev->compute();
-		this->rdd_address = static_cast<GlobalAddress<B>>(prev_rdd);
+		this->rdd_address = static_cast<GlobalAddress<A>>(prev_rdd);
 
 		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
 			e = this->f(e);
