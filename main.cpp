@@ -34,7 +34,7 @@ int main(int argc, char * argv[]) {
 	run([] {
 		auto rdd = new RangedRDD(0, 10);
 		cout << "Simple print" << endl;
-		rdd->print();
+		//rdd->print();
 		//print_vector(rdd->collect());
 		cout << "Mapped print" << endl;
 		rdd->map([](double a) {

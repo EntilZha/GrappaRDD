@@ -61,6 +61,9 @@ public:
 
     virtual GlobalAddress<A> compute() = 0;
 	int size;
+
+protected:
+	GlobalAddress<A> rdd_address;
 };
 
 template <typename A, typename Func>
@@ -68,21 +71,23 @@ class MappedRDD: public RDD<A> {
 public:
 	RDD<A> *prev;
 	Func f;
-	MappedRDD(RDD<A> *prev, Func f): prev(prev), f(f) {}
+	MappedRDD(RDD<A> *prev, Func f): prev(prev), f(f) {
+		this->size = prev->size;
+	}
 
 	GlobalAddress<A> compute() {
 		// Assumes sizeof(A)=sizeof(B)
-		auto prev_rdd = prev->compute();
+		this->rdd_address = prev->compute();
 		//typedef GlobalAddress<decltype(f(A()))> result_type;
 		//result_type rdd = global_alloc<result_type>(prev_rdd->size);
 
-		forall(prev_rdd, this->size, [this](int64_t i, A& e) {
-			cout << "Core: " << mycore() << endl;
-			cout << "e: " << e << endl;
+		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
+			cout << "Core: " << mycore();
+			cout << "e: " << e;
 			cout << "f(e): " << this->f(e) << endl;
 			e = this->f(e);
 		});
-		return prev_rdd;
+		return this->rdd_address;
 	}
 };
 
@@ -108,12 +113,13 @@ public:
 	}
 
 	GlobalAddress<double> compute() {
-		auto sequence = global_alloc<double>(end - start);
-		forall(sequence, end - start, [](int64_t i, double& e) {
+		this->rdd_address = global_alloc<double>(end - start);
+		forall(this->rdd_address, end - start, [](int64_t i, double& e) {
+			cout << "init var" << endl;
 			e = i;
 		});
 
-		return sequence;
+		return this->rdd_address;
 	}
 };
 
