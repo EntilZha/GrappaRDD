@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <functional>
 #include <Grappa.hpp>
 
 
@@ -19,7 +20,7 @@ void print_vector(vector<T> v) {
 }
 
 
-template<typename A, typename B, typename Func>
+template<typename A, typename B>
 class MappedRDD;
 
 template <typename A>
@@ -28,7 +29,7 @@ public:
 
 	template<typename Func>
 	auto map(Func f) -> RDD<decltype(f(A()))>* {
-		return new MappedRDD<A, decltype(f(A())), Func>(this, f);
+		return new MappedRDD<A, decltype(f(A()))>(this, f);
 	}
 
 	//template<typename Func>
@@ -62,12 +63,12 @@ protected:
 	GlobalAddress<A> rdd_address;
 };
 
-template <typename A, typename B, typename Func>
+template <typename A, typename B>
 class MappedRDD: public RDD<B> {
 public:
 	RDD<A> *prev;
-	Func f;
-	MappedRDD(RDD<A> *prev, Func f): prev(prev), f(f) {
+	std::function<B(A)> f;
+	MappedRDD(RDD<A> *prev, std::function<B(A)> f): prev(prev), f(f) {
 		this->size = prev->size;
 	}
 
@@ -77,27 +78,29 @@ public:
 		this->rdd_address = static_cast<GlobalAddress<B>>(prev_rdd);
 
 		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
-			cout << "Core: " << mycore();
-			cout << "e: " << e;
-			cout << "f(e): " << this->f(e) << endl;
 			e = this->f(e);
 		});
 		return this->rdd_address;
 	}
 };
 
-//template <typename A>
-//class ParallelCollectionRDD: public RDD<A> {
-	//vector<A> sequence;
+template <typename A>
+class ParallelCollectionRDD: public RDD<A> {
+	vector<A> sequence;
+public:
+	ParallelCollectionRDD(vector<A> sequence): sequence(sequence) {
+		this->size = sequence.size();
+	}
 
-//public:
-	//ParallelCollectionRDD(vector<A> sequence): sequence(sequence) {}
-
-//protected:
-	//GlobalAddress<A> compute() {
-		//return sequence;
-	//}
-//};
+protected:
+	GlobalAddress<A> compute() {
+		this->rdd_address = global_alloc<A>(this->size);
+		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
+			e = this->sequence[i];
+		});
+		return this->rdd_address;
+	}
+};
 
 class RangedRDD: public RDD<double> {
 	int start;
@@ -109,8 +112,7 @@ public:
 
 	GlobalAddress<double> compute() {
 		this->rdd_address = global_alloc<double>(end - start);
-		forall(this->rdd_address, end - start, [](int64_t i, double& e) {
-			cout << "init var" << endl;
+		forall(this->rdd_address, this->size, [](int64_t i, double& e) {
 			e = i;
 		});
 

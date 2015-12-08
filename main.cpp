@@ -5,31 +5,14 @@
 using namespace std;
 using namespace Grappa;
 
+struct container {
+	double a;
+	int b;
+};
+
 int main(int argc, char * argv[]) {
 	init(&argc, &argv);
 
-	//run([]{
-		//auto f = [](int a) {
-			//return a + 5;
-		//};
-
-		//auto array = global_alloc<int>(10);
-		//forall(array, 10, [f](int64_t i, int& n) {
-			//n = i;
-		//});
-
-		//forall(array, 10, [f](int& n) {
-			//cout << f(n) << endl;
-		//});
-	//});
-
-	//cout << "\n";
-
-
-
-    cout << "Hello, World!" << endl;
-    vector<int> data {1, 2, 3, 4};
-    auto context = new GrappaContext;
 
 	run([] {
 		auto rdd = new RangedRDD(0, 10);
@@ -44,6 +27,20 @@ int main(int argc, char * argv[]) {
 		on_all_cores([]{
 			cout << "Core Count: " << mycore() << endl;
 		});
+
+		cout << "ParallelCollectionRDD\n";
+    	vector<container> data;
+		for (int i = 0; i < 20; i++) {
+			container v;
+			v.a = 1.5 * i;
+			v.b = i;
+			data.push_back(v);
+		}
+		auto pcoll = new ParallelCollectionRDD<container>(data);
+		auto result = pcoll->collect();
+		for (int i = 0; i < 20; i ++) {
+			cout << "a: " << result[i].a << " b: " << result[i].b << endl;
+		}
 	});
 
     //auto rdd = context->parallelize(data);
