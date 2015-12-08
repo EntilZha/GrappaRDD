@@ -37,9 +37,8 @@ int main(int argc, char * argv[]) {
 			data.push_back(v);
 		}
 		auto pcoll = new ParallelCollectionRDD<container>(data);
-		auto result = pcoll->collect();
-		for (int i = 0; i < 20; i ++) {
-			cout << "a: " << result[i].a << " b: " << result[i].b << endl;
+		for (auto e: pcoll->collect()) {
+			cout << "a: " << e.a << " b: " << e.b << endl;
 		}
 	});
 

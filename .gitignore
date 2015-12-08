@@ -37,8 +37,14 @@ CMakeScripts
 cmake_install.cmake
 install_manifest.txt
 
+# YCM config
 .ycm_extra_conf.py
 
+# Build artifacts
 main.o
 main
 stats.json
+
+# Generated documentation
+docs/html
+docs/latex
