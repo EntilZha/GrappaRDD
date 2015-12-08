@@ -33,11 +33,14 @@ int main(int argc, char * argv[]) {
 
 	run([] {
 		auto rdd = new RangedRDD(0, 10);
+		cout << "Simple print" << endl;
 		rdd->print();
 		//print_vector(rdd->collect());
-		//rdd->map([](double a) {
-		//	return a * 2;
-		//})->print();
+		cout << "Mapped print" << endl;
+		rdd->map([](double a) {
+			return a * 2;
+		})->print();
+
 		on_all_cores([]{
 			cout << "Core Count: " << mycore() << endl;
 		});

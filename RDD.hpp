@@ -18,7 +18,7 @@ void print_vector(vector<T> v) {
 }
 
 
-template<typename A, typename B, typename Func>
+template<typename A, typename Func>
 class MappedRDD;
 
 template <typename A>
@@ -26,9 +26,14 @@ class RDD {
 public:
 
 	template<typename Func>
-	auto map(Func f) -> RDD<decltype(f(A()))>* {
-		return new MappedRDD<A, decltype(f(A())), Func>(this, f);
+	auto map(Func f) -> RDD<A>* {
+		return new MappedRDD<A, Func>(this, f);
 	}
+
+	//template<typename Func>
+	//auto map(Func f) -> RDD<decltype(f(A()))>* {
+		//return new MappedRDD<A, decltype(f(A())), Func>(this, f);
+	//}
 
 	//template<typename Func>
 	//auto fold(A init, Func f) -> decltype(f(A(), A())) {
@@ -58,22 +63,25 @@ public:
 	int size;
 };
 
-template <typename A, typename B, typename Func>
-class MappedRDD: public RDD<B> {
+template <typename A, typename Func>
+class MappedRDD: public RDD<A> {
 public:
 	RDD<A> *prev;
 	Func f;
 	MappedRDD(RDD<A> *prev, Func f): prev(prev), f(f) {}
 
-	GlobalAddress<B> compute() {
+	GlobalAddress<A> compute() {
 		// Assumes sizeof(A)=sizeof(B)
 		GlobalAddress<A> prev_rdd = prev->compute();
-		typedef GlobalAddress<decltype(f(A()))> result_type;
-		result_type rdd = static_cast<result_type>(prev_rdd);
-		forall(rdd, this->size, [this, prev_rdd](int64_t i, A& e) {
-			e = this->f(*(prev_rdd + i).pointer());
+		//typedef GlobalAddress<decltype(f(A()))> result_type;
+		//result_type rdd = global_alloc<result_type>(prev_rdd->size);
+
+		forall(prev_rdd, this->size, [this](int64_t i, A& e) {
+			cout << "e: " << e << endl;
+			cout << "f(e): " << this->f(e) << endl;
+			e = this->f(e);
 		});
-		return rdd;
+		return prev_rdd;
 	}
 };
 
