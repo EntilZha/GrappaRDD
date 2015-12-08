@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <functional>
+#include <type_traits>
 #include <Grappa.hpp>
 
 
@@ -23,7 +24,7 @@ void print_vector(vector<T> v) {
 template<typename T, typename A>
 class MappedRDD;
 
-template <typename A>
+template<typename A>
 class RDD {
 public:
 
@@ -63,9 +64,10 @@ protected:
 	GlobalAddress<A> rdd_address;
 };
 
-template <typename T, typename A>
+template<typename T, typename A>
 class MappedRDD: public RDD<A> {
 public:
+	static_assert(sizeof(A) == sizeof(T), "A and T must have the same size");
 	RDD<T> *prev;
 	std::function<A(T)> f;
 	MappedRDD(RDD<T> *prev, std::function<A(T)> f): prev(prev), f(f) {
@@ -74,17 +76,21 @@ public:
 
 	GlobalAddress<A> compute() {
 		// Assumes sizeof(A)=sizeof(T)
-		auto prev_rdd = prev->compute();
-		this->rdd_address = static_cast<GlobalAddress<A>>(prev_rdd);
+		auto prev_address = prev->compute();
+		cout << "prev_address: " << prev_address << endl;
+		this->rdd_address = static_cast<GlobalAddress<A>>(prev_address);
+		cout << "address: " << this->rdd_address << endl;
+		auto func = this->f;
 
-		forall(this->rdd_address, this->size, [this](int64_t i, A& e) {
-			e = this->f(e);
+		forall(this->rdd_address, this->size, [func](int64_t i, A& e) {
+			cout << "i: " << i << " e: " << e << " f(e): " << func(e) << endl;
+			e = func(e);
 		});
 		return this->rdd_address;
 	}
 };
 
-template <typename A>
+template<typename A>
 class ParallelCollectionRDD: public RDD<A> {
 	vector<A> sequence;
 public:
@@ -102,18 +108,22 @@ protected:
 	}
 };
 
-class RangedRDD: public RDD<double> {
-	int start;
-	int end;
+template<typename A>
+class RangedRDD: public RDD<A> {
+	static_assert(std::is_integral<A>::value, "RangedRDD<A> must have A as integral");
+	A start;
+	A end;
 public:
-	RangedRDD(int start, int end): start(start), end(end) {
-		size = end - start;
+	RangedRDD(A start, A end): start(start), end(end) {
+		this->size = static_cast<int>(end - start);
 	}
 
-	GlobalAddress<double> compute() {
-		this->rdd_address = global_alloc<double>(end - start);
-		forall(this->rdd_address, this->size, [](int64_t i, double& e) {
+	GlobalAddress<A> compute() {
+		this->rdd_address = global_alloc<A>(this->size);
+		cout << "ranged address: " << this->rdd_address << endl;
+		forall(this->rdd_address, this->size, [](int64_t i, A& e) {
 			e = i;
+			cout << "ranged: " << e << endl;
 		});
 
 		return this->rdd_address;

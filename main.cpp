@@ -15,13 +15,12 @@ int main(int argc, char * argv[]) {
 
 
 	run([] {
-		auto rdd = new RangedRDD(0, 10);
-		cout << "Simple print" << endl;
-		//rdd->print();
-		//print_vector(rdd->collect());
+		//cout << "Simple print" << endl;
+		//(new RangedRDD<int64_t>(0, 10))->print();
+
 		cout << "Mapped print" << endl;
-		rdd->map([](double a) {
-			return a * 2;
+		(new RangedRDD<int64_t>(0, 10))->map([](int64_t a) -> double {
+			return a * 2.5;
 		})->print();
 
 		on_all_cores([]{
@@ -36,9 +35,22 @@ int main(int argc, char * argv[]) {
 			v.b = i;
 			data.push_back(v);
 		}
+
 		auto pcoll = new ParallelCollectionRDD<container>(data);
 		for (auto e: pcoll->collect()) {
 			cout << "a: " << e.a << " b: " << e.b << endl;
+		}
+
+		vector<int64_t> data2 {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		auto pcoll2 = new ParallelCollectionRDD<int64_t>(data2);
+
+		cout << "Mapped ParallelCollectionRDD\n";
+		auto mpoll2 = pcoll2->map([](int64_t a) {
+			return a * 2;
+		});
+
+		for (auto e: mpoll2->collect()) {
+			cout << "ce: " << e << endl;
 		}
 	});
 
