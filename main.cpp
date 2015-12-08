@@ -38,25 +38,29 @@ int main(int argc, char *argv[]) {
             cout << "Core Count: " << mycore() << endl;
         });
 
-        cout << "ParallelCollectionRDD\n";
-        vector <int_container> data;
-        for (int i = 0; i < 20; i++) {
-            int_container v;
-            v.a = 2 * i;
-            v.b = i;
-            data.push_back(v);
-        }
+        vector<int> coll_data {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+        auto collection_rdd = new ParallelCollectionRDD<int>(coll_data);
+        print_vector(collection_rdd->collect());
 
-        auto pcoll = new ParallelCollectionRDD<int_container>(data);
-        auto mpcoll = pcoll->map([](int_container a) -> double_container {
-            double_container v;
-            v.a = 2.5;
-            v.b = 1.5;
-            return v;
-        });
-        for (auto e: mpcoll->collect()) {
-            cout << "a: " << e.a << " b: " << e.b << endl;
-        }
+        //cout << "ParallelCollectionRDD\n";
+        //vector <int_container> data;
+        //for (int i = 0; i < 20; i++) {
+            //int_container v;
+            //v.a = 2 * i;
+            //v.b = i;
+            //data.push_back(v);
+        //}
+
+        //auto pcoll = new ParallelCollectionRDD<int_container>(data);
+        //auto mpcoll = pcoll->map([](int_container a) -> double_container {
+            //double_container v;
+            //v.a = 2.5;
+            //v.b = 1.5;
+            //return v;
+        //});
+        //for (auto e: mpcoll->collect()) {
+            //cout << "a: " << e.a << " b: " << e.b << endl;
+        //}
 
     });
     //cout << "Printing numbers\n";
