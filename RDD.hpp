@@ -45,8 +45,12 @@ public:
                 *value_addr = f(*value_addr, *ptr + i);
             }
         });
-
-        return allreduce<A, f>(value);
+        A global_value = init;
+        A *global_value_addr = &global_value;
+        on_all_cores([global_value_addr, value] {
+             *global_value_addr = allreduce<A, f>(value);
+        });
+        return global_value;
     }
 
     auto collect() -> vector <A> {
