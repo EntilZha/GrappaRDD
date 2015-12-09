@@ -141,9 +141,14 @@ public:
 
     GlobalAddress <A> compute() {
         this->rdd_address = global_alloc<A>(this->size);
-        for (int i = 0; i < this->size; i++) {
-            delegate::write(this->rdd_address + i, this->sequence[i]);
-        }
+        auto size = this->size;
+        auto rdd_address = this->rdd_address;
+        auto sequence = this->sequence;
+        finish([size, rdd_address, sequence]{
+            for (int i = 0; i < size; i++) {
+                delegate::write<async>(rdd_address + i, sequence[i]);
+            }
+        });
         return this->rdd_address;
     }
 };
