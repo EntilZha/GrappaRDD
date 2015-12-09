@@ -34,16 +34,19 @@ public:
         return new MappedRDD<A, decltype(f(A()))>(this, f);
     }
 
-    auto fold(A init, std::function<A(A, A)> f) -> A {
+    typedef A(*fold_f_t)(const A&, const A&);
+    auto fold(A init, fold_f_t f) -> A {
         auto rdd = this->compute();
-        forall(rdd, size, [f, init](int64_t start, int64_t n, A *ptr) {
-            A value = init;
+
+        A value = init;
+        A *value_addr = &value;
+        forall(rdd, size, [f, value_addr](int64_t start, int64_t n, A *ptr) {
             for (auto i = 0; i < n; i++) {
-                value = f(value, *ptr + i);
+                *value_addr = f(*value_addr, *ptr + i);
             }
-            cout << "Core: " << mycore() << " Value: " << value << endl;
         });
 
+        A final_value = allreduce<A, f>(value);
         return A();
     }
 
