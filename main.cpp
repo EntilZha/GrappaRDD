@@ -47,9 +47,7 @@ int main(int argc, char *argv[]) {
             coll_data[i] = i;
         }
         auto collection_rdd = new ParallelCollectionRDD<int>(coll_data);
-        int sum = collection_rdd->fold(0, add);
-            //collective_add
-            //[](const int& a, const int& b) -> int {return a + b;}
+        int sum = collection_rdd->fold(0, [](const int& a, const int& b) -> int {return a + b;});
         cout << "Sum: " << sum << endl;
 
         cout << "ParallelCollectionRDD\n";
