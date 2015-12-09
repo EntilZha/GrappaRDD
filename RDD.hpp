@@ -38,18 +38,40 @@ public:
     auto fold(A init) -> A {
         auto rdd = this->compute();
 
-        A value = init;
-        A *value_addr = &value;
-        forall(rdd, size, [value_addr](int64_t start, int64_t n, A *ptr) {
-            for (auto i = 0; i < n; i++) {
-                *value_addr = f(*value_addr, *ptr + i);
-            }
-        });
         A global_value = init;
-        A *global_value_addr = &global_value;
-        on_all_cores([global_value_addr, value] {
-             *global_value_addr = allreduce<A, f>(value);
+
+        auto rdd_address = this->rdd_address;
+        auto size = this->size;
+        auto global_value_addr = make_global(&global_value);
+
+        finish([rdd_address, size, global_value_addr] {
+            on_all_cores([rdd_address, size, global_value_addr]{
+                A *local_start = rdd_address.localize();
+                A *local_end = (rdd_address + size).localize();
+                A local_value = *local_start;
+                if (local_end > local_start) {
+                    for(A *val = local_start + 1; val < local_end; ++val) {
+                        local_value = f(local_value, *val);
+                    }
+                }
+                delegate::call<async>(global_value_addr, [local_value] (A &global_value) {
+                    global_value = f(global_value, local_value);
+                });
+            });
         });
+
+        //A *value_addr = &value;
+        //forall(rdd, size, [value_addr](int64_t start, int64_t n, A *ptr) {
+            //for (auto i = 0; i < n; i++) {
+                //*value_addr = f(*value_addr, *ptr + i);
+            //}
+        //});
+        //A global_value = init;
+        //A *global_value_addr = &global_value;
+        //on_all_cores([global_value_addr, value] {
+             //*global_value_addr = allreduce<A, f>(value);
+        //});
+
         return global_value;
     }
 
