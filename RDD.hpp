@@ -34,8 +34,7 @@ public:
         return new MappedRDD<A, decltype(f(A()))>(this, f);
     }
 
-    typedef A(*fold_f_t)(const A&, const A&);
-    auto fold(A init, fold_f_t f) -> A {
+    auto fold(A init, A(*f)(const A&, const A&)) -> A {
         auto rdd = this->compute();
 
         A value = init;
