@@ -34,8 +34,7 @@ public:
         return new MappedRDD<A, decltype(f(A()))>(this, f);
     }
 
-    template<A (*f)(const A&, const A&)>
-    auto fold(A init) -> A {
+    auto fold(A init, A (*f)(const A&, const A&)) -> A {
         auto rdd = this->compute();
 
         A global_value = init;
@@ -44,8 +43,8 @@ public:
         auto size = this->size;
         auto global_value_addr = make_global(&global_value);
 
-        finish([rdd_address, size, global_value_addr] {
-            on_all_cores([rdd_address, size, global_value_addr]{
+        finish([f, rdd_address, size, global_value_addr] {
+            on_all_cores([rdd_address, size, global_value_addr, f]{
                 A *local_start = rdd_address.localize();
                 A *local_end = (rdd_address + size).localize();
                 A local_value = *local_start;
@@ -54,7 +53,7 @@ public:
                         local_value = f(local_value, *val);
                     }
                 }
-                delegate::call<async>(global_value_addr, [local_value] (A &global_value) {
+                delegate::call<async>(global_value_addr, [local_value, f] (A &global_value) {
                     global_value = f(global_value, local_value);
                 });
             });
