@@ -40,7 +40,10 @@ int main(int argc, char *argv[]) {
 
         vector<int> coll_data {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
         auto collection_rdd = new ParallelCollectionRDD<int>(coll_data);
-        print_vector(collection_rdd->collect());
+        int sum = collection_rdd->fold(
+            0, [](int a, int b) -> int {return a + b;}
+        );
+        cout << "Sum: " << sum << endl;
 
         cout << "ParallelCollectionRDD\n";
         vector <int_container> data;
