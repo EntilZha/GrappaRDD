@@ -17,6 +17,10 @@ struct double_container {
     double b;
 };
 
+int add(const int& a, const int& b) {
+    return a + b;
+}
+
 
 int main(int argc, char *argv[]) {
     init(&argc, &argv);
@@ -43,9 +47,11 @@ int main(int argc, char *argv[]) {
             coll_data[i] = i;
         }
         auto collection_rdd = new ParallelCollectionRDD<int>(coll_data);
-        int sum = collection_rdd->fold(
-            0, [](const int& a, const int& b) -> int {return a + b;}
-        );
+        int sum = collection_rdd->fold<
+            add
+            //collective_add
+            //[](const int& a, const int& b) -> int {return a + b;}
+        >(0);
         cout << "Sum: " << sum << endl;
 
         cout << "ParallelCollectionRDD\n";
