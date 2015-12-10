@@ -1,4 +1,5 @@
 #include "RDD.hpp"
+#include "Grappa.hpp"
 
 #ifndef GRAPPARDD_GRAPPACONTEXT_H
 #define GRAPPARDD_GRAPPACONTEXT_H

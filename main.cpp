@@ -5,7 +5,6 @@
 #include "GrappaContext.hpp"
 
 using std::cout;
-using namespace Grappa;
 
 struct int_container {
     int64_t a;

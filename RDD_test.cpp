@@ -1,7 +1,8 @@
-#include "Grappa.hpp"
+#include "GrappaContext.hpp"
 #include "RDD.hpp"
 #define BOOST_TEST_MODULE RDD_test
 #include <boost/test/unit_test.hpp>
+#define GRAPPA_RDD_TEST_ARGS boost::unit_test::framework::master_test_suite().argc, boost::unit_test::framework::master_test_suite().argv
 
 template<typename A>
 A sum(A start, A end) {
@@ -39,12 +40,11 @@ void range_test() {
 }
 
 BOOST_AUTO_TEST_CASE(rdd_test) {
-    init(GRAPPA_TEST_ARGS);
+    auto gc = new GrappaContext(GRAPPA_RDD_TEST_ARGS);
 
-    run([] {
+    gc->run([] {
         range_test();
     });
-
-    finalize();
+    gc->stop();
 }
 
