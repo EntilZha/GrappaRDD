@@ -32,7 +32,8 @@ class MappedRDD;
 template<typename A>
 class RDD {
 public:
-
+    template<typename T, typename U>
+    friend class MappedRDD;
     template<typename Func>
     auto map(Func f) -> RDD<decltype(f(A()))> * {
         return new MappedRDD<A, decltype(f(A()))>(this, f);
@@ -104,7 +105,7 @@ public:
     }
 
     virtual GlobalAddress <A> compute() = 0;
-
+protected:
     int size;
 
 protected:
