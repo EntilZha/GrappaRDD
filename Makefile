@@ -8,6 +8,9 @@ RDD_test.o: CXXFLAGS += -DBOOST_TEST_DYN_LINK -DBOOST_TEST_MODULE=RDD_test
 
 main: main.o
 
+test: RDD_test
+	./RDD_test
+
 RDD_test: RDD_test.o
 
 main.o: RDD_lib
