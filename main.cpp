@@ -1,7 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <stdio.h>
-#include <typeinfo>
 #include "GrappaContext.hpp"
 
 using std::cout;
@@ -24,21 +22,6 @@ int add(const int& a, const int& b) {
 int main(int argc, char *argv[]) {
     auto gc = new GrappaContext(argc, argv);
     gc->run([] {
-        //cout << "Simple print" << endl;
-        //(new RangedRDD<int64_t>(0, 10))->print();
-
-        cout << "Mapped print" << endl;
-        auto f = [](int64_t a) -> double {
-            return a * 2.5;
-        };
-
-        auto rdd = new RangedRDD<int64_t>(0, 10);
-        rdd->map(f)->print();
-
-        on_all_cores([] {
-            cout << "Core Count: " << mycore() << endl;
-        });
-
         vector<int> coll_data(100);
         for (int i = 0; i < 100; i++) {
             coll_data[i] = i;
@@ -69,21 +52,6 @@ int main(int argc, char *argv[]) {
 
     });
     gc->stop();
-    //cout << "Printing numbers\n";
-    //print_vector(r->compute());
-
-    //cout << "Printing sum\n";
-    //cout << r->fold(0, [](int a, int b) -> int {
-    //return a + b;
-    //});
-
-    //auto s = r->map([](double a) -> string {
-    //string prefix("number");
-    //string result = prefix + std::to_string(a);
-    //return result;
-    //});
-    //print_vector(s->collect());
-
 
     return 0;
 }

@@ -3,18 +3,16 @@
 */
 
 #include <vector>
-#include <algorithm>
 #include <iostream>
-#include <functional>
-#include <type_traits>
-#include <typeinfo>
 #include <Grappa.hpp>
 
 
 #ifndef GRAPPARDD_RDD_H
 #define GRAPPARDD_RDD_H
 
-using namespace std;
+using std::cout;
+using std::vector;
+using std::endl;
 using namespace Grappa;
 
 template<typename T>
@@ -107,8 +105,6 @@ public:
     virtual GlobalAddress <A> compute() = 0;
 protected:
     int size;
-
-protected:
     GlobalAddress <A> rdd_address;
 };
 
