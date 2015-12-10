@@ -5,16 +5,29 @@
 
 
 class GrappaContext {
+private:
+    bool closed = true;
 public:
-    GrappaContext() {
-        // Grappa init code goes here
+    GrappaContext(int argc, char *argv[]) {
+        Grappa::init(&argc, &argv);
+        closed = false;
     }
 
-    //template <typename A>
-    //ParallelCollectionRDD<A>* parallelize(vector<A> sequence) {
-        //return new ParallelCollectionRDD<A>(sequence);
-    //}
+    ~GrappaContext() {
+        if (!closed) {
+            Grappa::finalize();
+            closed = true;
+        }
+    }
 
+    void run(void(*fp)()) {
+        Grappa::run(fp);
+    }
+
+    void stop() {
+        this->~GrappaContext();
+        closed = true;
+    }
 };
 
 #endif //GRAPPARDD_GRAPPACONTEXT_H

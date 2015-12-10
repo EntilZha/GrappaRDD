@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include "GrappaContext.hpp"
 
-using namespace std;
+using std::cout;
 using namespace Grappa;
 
 struct int_container {
@@ -23,10 +23,8 @@ int add(const int& a, const int& b) {
 
 
 int main(int argc, char *argv[]) {
-    init(&argc, &argv);
-
-
-    run([] {
+    auto gc = new GrappaContext(argc, argv);
+    gc->run([] {
         //cout << "Simple print" << endl;
         //(new RangedRDD<int64_t>(0, 10))->print();
 
@@ -71,6 +69,7 @@ int main(int argc, char *argv[]) {
         }
 
     });
+    gc->stop();
     //cout << "Printing numbers\n";
     //print_vector(r->compute());
 
@@ -86,7 +85,6 @@ int main(int argc, char *argv[]) {
     //});
     //print_vector(s->collect());
 
-    finalize();
 
     return 0;
 }
