@@ -1,3 +1,7 @@
+/**
+    @author Pedro Rodriguez 
+*/
+
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -34,6 +38,13 @@ public:
         return new MappedRDD<A, decltype(f(A()))>(this, f);
     }
 
+    /**
+        Folds the RDD to a single value using f.
+
+        @param init Initial vale for fold
+        @param f Function which folds elements by (A, A) -> A
+        @return RDD<A> reduced using f
+    */
     auto fold(A init, A (*f)(const A&, const A&)) -> A {
         auto rdd = this->compute();
 
