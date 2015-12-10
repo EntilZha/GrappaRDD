@@ -44,6 +44,8 @@ install_manifest.txt
 main.o
 main
 stats.json
+RDD_test.o
+RDD_test
 
 # Generated documentation
 docs/html
