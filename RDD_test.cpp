@@ -34,6 +34,12 @@ BOOST_AUTO_TEST_CASE(rdd_range_test) {
 
         BOOST_CHECK_EQUAL(double_sum, sum_expect * 1.5);
 
+        auto numbers = rdd->collect();
+        BOOST_CHECK_EQUAL(numbers.size(), n);
+        for (int i = 0; i < n; i++) {
+            BOOST_CHECK(std::find(numbers.begin(), numbers.end(), i) != numbers.end());
+        }
+
     });
 
     finalize();
