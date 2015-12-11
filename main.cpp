@@ -2,6 +2,7 @@
 #include <vector>
 #include "GrappaContext.hpp"
 #include <time.h>
+#include <iomanip>
 
 using std::cout;
 
@@ -23,14 +24,16 @@ int add(const int& a, const int& b) {
 int main(int argc, char *argv[]) {
     auto gc = new GrappaContext(argc, argv);
     gc->run([] {
-        time_t t0;
-        time(&t0);
-
-        auto sum = RDD<int64_t>::range(1000000000)->sum();
-        time_t t1;
-        time(&t1);
-        double seconds = difftime(t1, t0);
-        cout << "Time: " << seconds << endl;
+        for (int i = 0; i < 3; i++) {
+            time_t t0;
+            time(&t0);
+            auto sum = RDD<int64_t>::range(1000000000)->sum();
+            time_t t1;
+            time(&t1);
+            double seconds = difftime(t1, t0);
+            cout << "Loop: " << i << endl;
+            cout << "Time: " << std::fixed << std::setprecision(3) << seconds << endl;
+        }
         //vector<int> coll_data(100);
         //for (int i = 0; i < 100; i++) {
             //coll_data[i] = i;
