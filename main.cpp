@@ -25,14 +25,13 @@ int main(int argc, char *argv[]) {
     auto gc = new GrappaContext(argc, argv);
     gc->run([] {
         struct timeval t0, t1;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 10; i++) {
             gettimeofday(&t0, NULL);
             auto rdd = RDD<int64_t>::range(1000000000)->map([](const int64_t& a){return a;});
             auto sum = rdd->sum();
             gettimeofday(&t1, NULL);
-            cout << "Loop: " << i << endl;
-            cout << "Seconds: " << t1.tv_sec - t0.tv_sec << endl;
-            cout << "Milliseconds: " << (t1.tv_usec - t0.tv_usec) / 1000 << endl;
+            auto ms = (t1.tv_sec - t0.tv_sec) * 1000 + (t1.tv_usec - t0.tv_usec) / 1000;
+            cout << ms << endl;
             delete rdd;
         }
         //vector<int> coll_data(100);
