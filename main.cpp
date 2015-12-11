@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
             gettimeofday(&t1, NULL);
             cout << "Loop: " << i << endl;
             cout << "Seconds: " << t1.tv_sec - t0.tv_sec << endl;
-            cout << "Milliseconds: " << (t1.tv_usec - t1.tv_usec) / 1000 << endl;
+            cout << "Milliseconds: " << (t1.tv_usec - t0.tv_usec) / 1000 << endl;
         }
         //vector<int> coll_data(100);
         //for (int i = 0; i < 100; i++) {
