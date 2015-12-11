@@ -51,6 +51,10 @@ public:
     static RangedRDD<A>* range(A start, A end);
     static RangedRDD<A>* range(A end);
 
+    ~RDD() {
+        this->free();
+    }
+
     template<typename Func>
     auto map(Func f) -> RDD<decltype(f(A()))> * {
         return new MappedRDD<A, decltype(f(A()))>(this, f);
@@ -118,6 +122,7 @@ public:
     }
 
     virtual GlobalAddress <A> compute() = 0;
+    virtual void free() = 0;
 protected:
     int size;
     GlobalAddress <A> rdd_address;
@@ -144,6 +149,10 @@ public:
             e = func((T &) e);
         });
         return this->rdd_address;
+    }
+
+    void free() {
+        prev->free();
     }
 };
 
@@ -173,6 +182,10 @@ public:
         });
         return this->rdd_address;
     }
+
+    void free() {
+        global_free(this->rdd_address);
+    }
 };
 
 template<typename A>
@@ -191,6 +204,10 @@ public:
         });
 
         return this->rdd_address;
+    }
+
+    void free() {
+        global_free(this->rdd_address);
     }
 };
 
