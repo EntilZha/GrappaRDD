@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         struct timeval t0, t1;
         for (int i = 0; i < 3; i++) {
             gettimeofday(&t0, NULL);
-            auto rdd = RDD<int64_t>::range(1000000);
+            auto rdd = RDD<int64_t>::range(1000000000)->map([](const int64_t& a){return a;});
             auto sum = rdd->sum();
             gettimeofday(&t1, NULL);
             cout << "Loop: " << i << endl;

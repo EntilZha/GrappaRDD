@@ -118,15 +118,9 @@ public:
         });
     }
 
-    virtual GlobalAddress <A> compute() = 0;
-    virtual void free() {
-        cout << "Parent free called" << endl;
-    };
+    virtual ~RDD<A>() {}
 
-    ~RDD<A>() {
-        cout << "RDD destructor called" << endl;
-        this->free();
-    }
+    virtual GlobalAddress <A> compute() = 0;
 protected:
     int size;
     GlobalAddress <A> rdd_address;
@@ -155,8 +149,8 @@ public:
         return this->rdd_address;
     }
 
-    virtual void free() override {
-        prev->free();
+    ~MappedRDD() {
+        delete prev;
     }
 };
 
@@ -187,7 +181,7 @@ public:
         return this->rdd_address;
     }
 
-    virtual void free() override {
+    ~ParallelCollectionRDD() {
         global_free(this->rdd_address);
     }
 };
@@ -210,9 +204,8 @@ public:
         return this->rdd_address;
     }
 
-    virtual void free() override {
+    ~RangedRDD() {
         global_free(this->rdd_address);
-        cout << "RDD freed" << endl;
     }
 };
 
