@@ -24,15 +24,14 @@ int add(const int& a, const int& b) {
 int main(int argc, char *argv[]) {
     auto gc = new GrappaContext(argc, argv);
     gc->run([] {
+        struct timeval t0, t1;
         for (int i = 0; i < 3; i++) {
-            time_t t0;
-            time(&t0);
+            gettimeofday(&t0, NULL);
             auto sum = RDD<int64_t>::range(1000000000)->sum();
-            time_t t1;
-            time(&t1);
-            double seconds = difftime(t1, t0);
+            gettimeofday(&t1, NULL);
             cout << "Loop: " << i << endl;
-            cout << "Time: " << std::fixed << std::setprecision(3) << seconds << endl;
+            cout << "Seconds: " << t1.tv_sec - t0.tv_sec << endl;
+            cout << "Milliseconds: " << (t1.tv_usec - t1.tv_usec) / 1000 << endl;
         }
         //vector<int> coll_data(100);
         //for (int i = 0; i < 100; i++) {
