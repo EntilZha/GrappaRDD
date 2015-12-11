@@ -1,0 +1,83 @@
+\hypertarget{class_r_d_d}{}\section{R\+D\+D$<$ A $>$ Class Template Reference}
+\label{class_r_d_d}\index{R\+D\+D$<$ A $>$@{R\+D\+D$<$ A $>$}}
+Inheritance diagram for R\+D\+D$<$ A $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_r_d_d}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_r_d_d_adcb93ee8214e2be3dadd74da19bf3956}{}{\footnotesize template$<$typename Func $>$ }\\auto {\bfseries map} (Func f) -\/$>$ \hyperlink{class_r_d_d}{R\+D\+D}$<$ decltype(f(A()))$>$ $\ast$\label{class_r_d_d_adcb93ee8214e2be3dadd74da19bf3956}
+
+\item 
+auto \hyperlink{class_r_d_d_afb3f661ea1cc3aac6dbe66f764de1e43}{fold} (A init, A($\ast$f)(const A \&, const A \&)) -\/$>$ A
+\item 
+\hypertarget{class_r_d_d_a3e89daeddd050a5d6577e41f58b27b8c}{}A {\bfseries sum} ()\label{class_r_d_d_a3e89daeddd050a5d6577e41f58b27b8c}
+
+\item 
+\hypertarget{class_r_d_d_abbd3422e2760f4ca3af308cfb2606d50}{}A {\bfseries product} ()\label{class_r_d_d_abbd3422e2760f4ca3af308cfb2606d50}
+
+\item 
+\hypertarget{class_r_d_d_acd0b3de3863764e77ac9729a152f87c0}{}auto {\bfseries collect} () -\/$>$ vector$<$ A $>$\label{class_r_d_d_acd0b3de3863764e77ac9729a152f87c0}
+
+\item 
+\hypertarget{class_r_d_d_a3cee954e8f79a7066659ee4684fa7011}{}void {\bfseries print} ()\label{class_r_d_d_a3cee954e8f79a7066659ee4684fa7011}
+
+\item 
+\hypertarget{class_r_d_d_a7cbde0c28cf2ec9db04344e1e32e7217}{}virtual Global\+Address$<$ A $>$ {\bfseries compute} ()=0\label{class_r_d_d_a7cbde0c28cf2ec9db04344e1e32e7217}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_r_d_d_abf5c7a7da50a4b5ff2ebc382ed2a3720}{}static \hyperlink{class_ranged_r_d_d}{Ranged\+R\+D\+D}$<$ A $>$ $\ast$ {\bfseries range} (A start, A end)\label{class_r_d_d_abf5c7a7da50a4b5ff2ebc382ed2a3720}
+
+\item 
+\hypertarget{class_r_d_d_acfa2ab9edf80c598f917a42aa08f6b85}{}static \hyperlink{class_ranged_r_d_d}{Ranged\+R\+D\+D}$<$ A $>$ $\ast$ {\bfseries range} (A end)\label{class_r_d_d_acfa2ab9edf80c598f917a42aa08f6b85}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_r_d_d_ad6d07c0d1bc8894b8dc15ac80cf6f73b}{}int {\bfseries size}\label{class_r_d_d_ad6d07c0d1bc8894b8dc15ac80cf6f73b}
+
+\item 
+\hypertarget{class_r_d_d_ab77cd5f6dbfea70169ea3c91e227f589}{}Global\+Address$<$ A $>$ {\bfseries rdd\+\_\+address}\label{class_r_d_d_ab77cd5f6dbfea70169ea3c91e227f589}
+
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_r_d_d_aa90384db8e0bab61dfec3a641938e7db}{}{\footnotesize template$<$typename T , typename U $>$ }\\class {\bfseries Mapped\+R\+D\+D}\label{class_r_d_d_aa90384db8e0bab61dfec3a641938e7db}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_r_d_d_afb3f661ea1cc3aac6dbe66f764de1e43}{}\index{R\+D\+D@{R\+D\+D}!fold@{fold}}
+\index{fold@{fold}!R\+D\+D@{R\+D\+D}}
+\subsubsection[{fold(\+A init, A($\ast$f)(const A \&, const A \&)) -\/$>$ A}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename A$>$ auto {\bf R\+D\+D}$<$ A $>$\+::fold (
+\begin{DoxyParamCaption}
+\item[{A}]{init, }
+\item[{A($\ast$)(const A \&, const A \&)}]{f}
+\end{DoxyParamCaption}
+) -\/$>$ A \hspace{0.3cm}{\ttfamily [inline]}}\label{class_r_d_d_afb3f661ea1cc3aac6dbe66f764de1e43}
+Folds the \hyperlink{class_r_d_d}{R\+D\+D} to a single value using f.
+
+
+\begin{DoxyParams}{Parameters}
+{\em init} & Initial vale for fold \\
+\hline
+{\em f} & Function which folds elements by (A, A) -\/$>$ A \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{class_r_d_d}{R\+D\+D} reduced using f 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+R\+D\+D.\+hpp\end{DoxyCompactItemize}
