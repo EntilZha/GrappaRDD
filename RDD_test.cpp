@@ -15,7 +15,7 @@ A sum(A start, A end) {
 
 void range_test() {
     int64_t n = 100;
-    auto rdd = new RangedRDD<int64_t>(0, n);
+    auto rdd = RDD<int64_t>::range(0, n);
     auto rdd_sum = rdd->fold(0, [](const int64_t& a, const int64_t& b) {
         return a + b;
     });
@@ -37,6 +37,8 @@ void range_test() {
     for (int i = 0; i < n; i++) {
         BOOST_CHECK(std::find(numbers.begin(), numbers.end(), i) != numbers.end());
     }
+
+    BOOST_CHECK_EQUAL(RDD<int>::range(10)->sum(), RDD<int>::range(0, 10)->sum());
 }
 
 BOOST_AUTO_TEST_CASE(rdd_test) {

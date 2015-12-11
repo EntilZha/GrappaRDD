@@ -15,11 +15,23 @@ using std::vector;
 using std::endl;
 using namespace Grappa;
 
-template<typename T>
-void print_vector(vector <T> v) {
-    cout << "Length: " << v.size() << endl;
-    for (auto i = v.begin(); i != v.end(); ++i) {
-        cout << *i << ' ' << endl;
+namespace GrappaRDD {
+    template<typename T>
+    void print_vector(vector <T> v) {
+        cout << "Length: " << v.size() << endl;
+        for (auto i = v.begin(); i != v.end(); ++i) {
+            cout << *i << ' ' << endl;
+        }
+    }
+
+    template<typename A>
+    A add(const A& left, const A& right) {
+        return left + right;
+    }
+
+    template<typename A>
+    A product(const A& left, const A& right) {
+        return left * right;
     }
 }
 
@@ -28,10 +40,17 @@ template<typename T, typename A>
 class MappedRDD;
 
 template<typename A>
+class RangedRDD;
+
+template<typename A>
 class RDD {
 public:
     template<typename T, typename U>
     friend class MappedRDD;
+
+    static RangedRDD<A>* range(A start, A end);
+    static RangedRDD<A>* range(A end);
+
     template<typename Func>
     auto map(Func f) -> RDD<decltype(f(A()))> * {
         return new MappedRDD<A, decltype(f(A()))>(this, f);
@@ -69,19 +88,15 @@ public:
             });
         });
 
-        //A *value_addr = &value;
-        //forall(rdd, size, [value_addr](int64_t start, int64_t n, A *ptr) {
-            //for (auto i = 0; i < n; i++) {
-                //*value_addr = f(*value_addr, *ptr + i);
-            //}
-        //});
-        //A global_value = init;
-        //A *global_value_addr = &global_value;
-        //on_all_cores([global_value_addr, value] {
-             //*global_value_addr = allreduce<A, f>(value);
-        //});
-
         return global_value;
+    }
+
+    A sum() {
+        return this->fold(A(), GrappaRDD::add);
+    }
+
+    A product() {
+        return this->fold(A(), GrappaRDD::product);
     }
 
     auto collect() -> vector <A> {
@@ -178,6 +193,16 @@ public:
         return this->rdd_address;
     }
 };
+
+template<typename A>
+RangedRDD<A>* RDD<A>::range(A start, A end) {
+    return new RangedRDD<A>(start, end);
+}
+
+template<typename A>
+RangedRDD<A>* RDD<A>::range(A end) {
+    return new RangedRDD<A>(0, end);
+}
 
 #endif //GRAPPARDD_RDD_H
 
