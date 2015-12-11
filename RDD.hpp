@@ -51,9 +51,6 @@ public:
     static RangedRDD<A>* range(A start, A end);
     static RangedRDD<A>* range(A end);
 
-    ~RDD() {
-        this->free();
-    }
 
     template<typename Func>
     auto map(Func f) -> RDD<decltype(f(A()))> * {
@@ -122,7 +119,14 @@ public:
     }
 
     virtual GlobalAddress <A> compute() = 0;
-    virtual void free() = 0;
+    virtual void free() {
+        cout << "Parent free called" << endl;
+    };
+
+    ~RDD<A>() {
+        cout << "RDD destructor called" << endl;
+        this->free();
+    }
 protected:
     int size;
     GlobalAddress <A> rdd_address;
@@ -151,7 +155,7 @@ public:
         return this->rdd_address;
     }
 
-    void free() {
+    virtual void free() override {
         prev->free();
     }
 };
@@ -183,7 +187,7 @@ public:
         return this->rdd_address;
     }
 
-    void free() {
+    virtual void free() override {
         global_free(this->rdd_address);
     }
 };
@@ -206,8 +210,9 @@ public:
         return this->rdd_address;
     }
 
-    void free() {
+    virtual void free() override {
         global_free(this->rdd_address);
+        cout << "RDD freed" << endl;
     }
 };
 

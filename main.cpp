@@ -27,11 +27,13 @@ int main(int argc, char *argv[]) {
         struct timeval t0, t1;
         for (int i = 0; i < 3; i++) {
             gettimeofday(&t0, NULL);
-            auto sum = RDD<int64_t>::range(1000000000)->sum();
+            auto rdd = RDD<int64_t>::range(1000000);
+            auto sum = rdd->sum();
             gettimeofday(&t1, NULL);
             cout << "Loop: " << i << endl;
             cout << "Seconds: " << t1.tv_sec - t0.tv_sec << endl;
             cout << "Milliseconds: " << (t1.tv_usec - t0.tv_usec) / 1000 << endl;
+            delete rdd;
         }
         //vector<int> coll_data(100);
         //for (int i = 0; i < 100; i++) {
